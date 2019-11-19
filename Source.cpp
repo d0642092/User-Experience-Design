@@ -2,6 +2,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core.hpp>
 #include <time.h>
+#include <iostream>
 
 using namespace cv;
 using namespace std;
@@ -18,8 +19,8 @@ void video(); //攝影機
 
 int main(int argc, char** argv)
 {
-	//video();
-	Sourceimage = imread("kanahei.jpg");
+	video();
+	/*Sourceimage = imread("kanahei.jpg");
 	imshow("Source image", Sourceimage);
 	rows = atoi("4");
 	cols = atoi("4");
@@ -47,7 +48,7 @@ int main(int argc, char** argv)
 		}
 	}
 	setMouseCallback("Splite image", OnMouseAction);
-	waitKey();
+	waitKey();*/
 	return 0;
 }
 
@@ -85,28 +86,90 @@ void OnMouseAction(int event, int x, int y, int flags, void *ustc)
 void video()
 {
 	VideoCapture cap(0);
-	Mat Sourceimage = Mat::zeros(Size(800, 600), CV_8UC3);
-	Mat output = Mat::zeros(Size(800, 600), CV_8UC3);
-
-	Sourceimage = imread("kanahei.jpg");
-	Point p1(100, 100);
-	Point p2(50, 50);
+	Mat frame, frameHSV;
+	Mat Sourceimage = imread("kanahei.jpg");
+	vector< std::vector<cv::Point> > OriginalContours;
+	vector<Vec4i > hierarchy;
+	vector<vector<Point>> FinalContours;
+	vector<Point> hull;
+	int i, j;
+	int Width = cap.get(CV_CAP_PROP_FRAME_WIDTH), Height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+	float fHeight = ((float)2 / 3 - (float)1 / 7) * Height;
 	while (1) {
-		Mat frame = Mat::zeros(Size(800,600), CV_8UC3);
-		// Capture frame-by-frame
+		
 		cap >> frame;
-		frame = Mat::zeros(Size(800, 600), CV_8UC3);
-		line(frame, p1, p2, Scalar(0, 0, 255));
-		// If the frame is empty, break immediately
 		if (frame.empty())
 			break;
-		//addWeighted(frame, 0.7, mix, 0.3, 0.0, output);
-		// Display the resulting frame
-		imshow("output", output);
-		imshow("Extracted Frame", frame); // Press ESC on keyboard to exit
-		char c = (char)waitKey(25);
+
+		flip(frame, frame, 1); //左右反轉
+		GaussianBlur(frame, frame, Size(7, 7), 2.0, 1.5); //高斯模糊
+		cvtColor(frame, frameHSV, CV_BGR2HSV); //通道轉換
+		Mat mask(frame.rows, frame.cols, CV_8UC1);
+		inRange(frameHSV, Scalar(5, 30, 30), Scalar(40, 170, 256), mask);
+		erode(mask, mask, Mat(5, 5, CV_8U), Point(-1, -1), 1); //去除多餘亮點
+		OriginalContours.clear();
+		hierarchy.clear();
+		FinalContours.clear();
+		findContours(mask, OriginalContours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE); //找輪廓
+		// 去除多餘輪廓
+		for (i = 0; i < OriginalContours.size(); i++)
+		{
+			if (fabs(contourArea(Mat(OriginalContours[i]))) > 12000)
+			{
+				FinalContours.push_back(OriginalContours[i]);
+			}
+		}
+		//cv::drawContours(frame, FinalContours, -1, Scalar(0, 0, 255), 3); //畫輪廓
+
+		//找凸出輪廓
+		int hullcount;
+		int iNumOfContours = FinalContours.size();
+		Point top;
+
+
+		for (j = 0; j < iNumOfContours; j++)
+		{
+			convexHull(Mat(FinalContours[j]), hull, true);
+			hullcount = (int)hull.size();
+			//
+			for (i = 0; i < hullcount - 1; i++)
+			{
+				line(frame, hull[i + 1], hull[i], Scalar(255, 0, 0), 2, CV_AA);
+				circle(frame, hull[(hullcount - 1) / 2], 4, Scalar(0, 255, 0), 1); //綠點
+
+			}
+			//line(frame, hull[hullcount - 1], hull[0], Scalar(255, 0, 0), 2, CV_AA);
+			//line(frame, top, top, Scalar(255, 0, 255), 18, CV_AA);
+
+			/*Point temp;
+			
+
+			for (i = 0; i < (int)hull.size() - 1; i++) //找出綠點位置
+			{
+				for (j = 0; j < (int)hull.size() - 1; j++)
+				{
+					if (hull[i].x > hull[i + 1].x || hull[i].y > hull[i + 1].y)
+					{
+						temp.x = hull[i].x;
+						hull[i].x = hull[i + 1].x;
+						hull[i + 1].x = temp.x;						
+					}
+				}
+			}*/
+
+		}
+
+
+		imshow("Extracted Frame", frame);
+		imshow("Frame", frameHSV); 
+
+		char c = (char)waitKey(25); //按esc結束程式
 		if (c == 27)
 			break;
+
 	}
+
+	for (i = 0; i < (int)hull.size(); i++) //找出綠點位置
+		cout << hull[i];
 
  }
