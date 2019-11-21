@@ -16,13 +16,12 @@ static int vectornumber = 0;
 void OnMouseAction(int event, int x, int y, int flags, void *ustc);
 void video(); //攝影機
 void video2();
-void hsvreg();
 
 int main(int argc, char** argv)
 {
-	video2(); //皮膚色
+	//video2(); //皮膚色
 	//video(); //藍色
-	Sourceimage = imread("kanahei.jpg");
+	Sourceimage = imread("images.jpg");
 	imshow("Source image", Sourceimage);
 	rows = atoi("4");
 	cols = atoi("4");
@@ -37,7 +36,9 @@ int main(int argc, char** argv)
 			Mat SourceRoi = Sourceimage(Rect(j*Roicols, i*Roirows, Roicols - 1, Roirows - 1));
 			arraryimage.push_back(SourceRoi);
 		}
-	}	// 随機函數	Randarrary( arraryimage);
+	}	
+	// 随機函數	
+	Randarrary(arraryimage);
 	for (int i = 0; i < rows; i++)
 	{
 		for (int j = 0; j < cols; j++)
