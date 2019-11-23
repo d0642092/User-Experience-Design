@@ -149,7 +149,8 @@ void video2()
 	//Mat test = images(img.rows, img.cols);
 	Mat test = creatImg(img.rows, img.cols,img.type());
 	Mat out1 = Mat::zeros(img.rows, img.cols, img.type());;
-	
+	Mat out2 = Mat::zeros(img.rows, img.cols, img.type());;
+	Point p;
 	int flag;
 
 	while (1) {
@@ -215,7 +216,7 @@ void video2()
 		//imshow("Thresholded Image", dst);
 		
 		//imshow("d", d );
-		
+
 		for (int n = 0; n < pointList.size(); n++) {
 			Point myPoint = pointList[n];
 			//if()
@@ -224,27 +225,39 @@ void video2()
 			}
 			if (mc.x >= myPoint.x-30 & mc.x <=  myPoint.x + 30) {
 				if (mc.y >= myPoint.y - 30 & mc.y <= myPoint.y + 30) {
-					Scalar color = out.at<Vec3b>(myPoint.x + 50, myPoint.y + 50);
-					if (color == Scalar(0, 0, 255)) {
+					//Scalar color = out.at<Vec3b>(myPoint.x + 50, myPoint.y + 50);
+					/*if (color == Scalar(0, 0, 255)) {
 						circle(out1, myPoint, 50, Scalar(0, 0, 255), 2);
 						subtract(out, out1, out);
 						circle(out, myPoint, 50, Scalar(0, 255, 0), 2);
-						
-					}
+					}*/
+
 					circle(out1, myPoint, 50, Scalar(0, 0, 255), 2);
+					circle(out2, myPoint, 50, Scalar(0, 255, 0), 2);
 					subtract(out, out1, out);
-					//circle(out, myPoint, 50, Scalar(0, 255, 0), 2);
+					//absdiff(out, out2, out);
+					//circle(out1, myPoint, 50, Scalar(0, 0, 255), 2);
 					
+					absdiff(out, out1, out);
+
+					//circle(out, myPoint, 50, Scalar(0, 255, 0), 2);
+					//subtract(out, out1, out);
+					//absdiff(out, out1, out);
+					p = myPoint;
+					break;
 				}
 			}
-	
+			//circle(out, myPoint, 50, Scalar(0, 255, 0), 2);
 		}
 
 		absdiff(out, out1, out);
-
-		imshow("o", out1);
+		absdiff(out, out2, out);
+		//circle(out, p, 50, Scalar(0, 255,0), 2);
+		
+		imshow("fih", out1);
+		imshow("fih213123", out2);
 		imshow("finish", out);
-
+		//Mat o = out.clone();
 		
 		//setMouseCallback("Splite image", OnMouseAction);
 		
