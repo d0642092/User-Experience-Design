@@ -1,6 +1,10 @@
-﻿#include <opencv2/highgui/highgui.hpp>  
+#include <opencv2/highgui/highgui.hpp>  
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core.hpp>
+
+
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/photo.hpp>
 #include <time.h>
 #include <iostream>
 
@@ -16,12 +20,34 @@ static int vectornumber = 0;
 void OnMouseAction(int event, int x, int y, int flags, void *ustc);
 void video(); //攝影機
 void video2();
-
+Mat images(int x,int y);
+Mat creatImg(int x,int y,int z);
 int main(int argc, char** argv)
 {
-	//video2(); //皮膚色
+	video2(); //皮膚色
 	//video(); //藍色
-	Sourceimage = imread("images.jpg");
+
+	//
+	//waitKey();
+	//images();
+	return 0;
+}
+Mat creatImg(int x,int y,int z) {
+	Mat img = Mat::zeros(x, y, z);
+	int i,j;
+	for ( j = 90;j <= y -160;j+=100) {
+		for (i = 110; i < x;i+=100) {
+			circle(img, Point(i, j), 50, Scalar(0, 0, 255), 2);
+		}
+		
+	}
+	return img;
+}
+Mat images(int x,int y) {
+	Sourceimage = imread("img.jpg");
+	//Mat backGround = Mat::zeros(600, 500, Sourceimage.type());
+	resize(Sourceimage, Sourceimage, Size(x, y));
+	//seamlessClone(Sourceimage, backGround, Sourceimage, Point(300,250), Sourceimage,NORMAL_CLONE);
 	imshow("Source image", Sourceimage);
 	rows = atoi("4");
 	cols = atoi("4");
@@ -36,7 +62,7 @@ int main(int argc, char** argv)
 			Mat SourceRoi = Sourceimage(Rect(j*Roicols, i*Roirows, Roicols - 1, Roirows - 1));
 			arraryimage.push_back(SourceRoi);
 		}
-	}	
+	}
 	// 随機函數	
 	Randarrary(arraryimage);
 	for (int i = 0; i < rows; i++)
@@ -50,11 +76,10 @@ int main(int argc, char** argv)
 			waitKey(150);
 		}
 	}
-	setMouseCallback("Splite image", OnMouseAction);
-	waitKey();
-	return 0;
+	
+	return Spilteimage;
+	
 }
-
 void Randarrary(vector<Mat>& vectorMat)
 {
 	for (int i = 0; i < vectorMat.size(); i++)
@@ -67,7 +92,7 @@ void Randarrary(vector<Mat>& vectorMat)
 
 void OnMouseAction(int event, int x, int y, int flags, void *ustc)
 {
-	if (event == CV_EVENT_LBUTTONDOWN)
+	if (event == CV_EVENT_MOUSEMOVE)
 	{
 		Mat RoiSpilte, RoiSource;
 		int rows = (y / Roirows)*Roirows;
@@ -110,11 +135,11 @@ void video() //皮膚色
 		Mat mask(frame.rows, frame.cols, CV_8UC1);
 		inRange(frameHSV, Scalar(5, 30, 30), Scalar(40, 170, 256), mask);
 		erode(mask, mask, Mat(5, 5, CV_8U), Point(-1, -1), 1); //去除多餘亮點
-		
+
 		//Mat grayscaleMat(frame.size(), CV_8U);
 		//cvtColor(frame, grayscaleMat, CV_BGR2GRAY);
 
-		
+
 		OriginalContours.clear();
 		hierarchy.clear();
 		FinalContours.clear();
@@ -207,10 +232,18 @@ void video2()
 	int iHighS = 255;
 	int iLowV = 40;
 	int iHighV = 255;
-
+	Mat test = images(600, 500);
 	while (1) {
 
 		cap >> img;
+		
+		//Mat test = creatImg(img.rows, img.cols, img.type());
+		resize(img, img, Size(600,500));
+		imshow("t", test);
+		Mat backGround = Mat::zeros(img.rows, img.cols,img.type());
+		Mat out;
+		
+		Mat d;
 		if (img.empty())
 			break;
 
@@ -219,7 +252,7 @@ void video2()
 		cvtColor(img, imgHSV, COLOR_BGR2HSV);//转为HSV
 		Mat imgThresholded;
 		inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), imgThresholded);
-
+		
 		Mat element = getStructuringElement(MORPH_RECT, Size(5, 5));
 		morphologyEx(imgThresholded, imgThresholded, MORPH_OPEN, element);
 		//闭操作 (连接一些连通域)
@@ -242,8 +275,16 @@ void video2()
 			convexHull(contours[i], hull[i]);
 			drawContours(dst, hull, i, Scalar(0, 0, 255), 2);
 		}
-		imshow("Thresholded Image", dst);
 
+		backGround = img.clone();
+		//seamlessClone(test, backGround, NULL, Point(backGround.rows, backGround.cols), out, MONOCHROME_TRANSFER);
+		
+		absdiff(backGround, dst, d);
+		absdiff(test, d, out);
+		imshow("Thresholded Image", dst);
+		imshow("d", d );
+		imshow("finish", out);
+		//setMouseCallback("Splite image", OnMouseAction);
 
 
 		//这里是自定义的求取形心函数，当然用连通域计算更好  
