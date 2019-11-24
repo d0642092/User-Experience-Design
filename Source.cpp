@@ -16,7 +16,6 @@ vector<Point> pointList;
 vector<Mat>arraryimage;
 void Randarrary(vector<Mat> &vectorMat);    //隨機排列子圖像序列函數
 static int vectornumber = 0;
-void OnMouseAction(int event, int x, int y, int flags, void *ustc);
 //void video(); //攝影機
 void video2();
 Mat images(int x, int y);
@@ -96,27 +95,6 @@ void Randarrary(vector<Mat>& vectorMat)
 	}
 }
 
-void OnMouseAction(int event, int x, int y, int flags, void *ustc)
-{
-	if (event == CV_EVENT_MOUSEMOVE)
-	{
-		Mat RoiSpilte, RoiSource;
-		int rows = (y / Roirows)*Roirows;
-		int clos = (x / Roicols)*Roicols;
-		RoiSpilte = Spilteimage(Rect(clos, rows, Roicols, Roirows));
-		imshow("Slice", RoiSpilte);
-		Mat image = Mat::zeros(Sourceimage.rows - Roirows, Sourceimage.cols - Roicols, CV_32FC1);
-		matchTemplate(Sourceimage, RoiSpilte, image, 1);
-		normalize(image, image, 0, 1, NORM_MINMAX);
-		double minV = 0;
-		double maxV = 0;
-		Point minP, maxP;
-		minMaxLoc(image, &minV, &maxV, &minP, &maxP);
-		Mat ROIDst = Dstimage(Rect(minP.x, minP.y, Roicols, Roirows));
-		addWeighted(ROIDst, 0, RoiSpilte, 1, 0, ROIDst, -1);
-		imshow("Jigsaw image", Dstimage);
-	}
-}
 
 
 
@@ -196,7 +174,7 @@ void video2()
 		cvtColor(imgThresholded, imgThresholded, CV_GRAY2BGR);
 		for (int i = 0; i < contours.size(); i++) { //畫出區塊
 			convexHull(contours[i], hull[i]);
-			drawContours(dst, hull, i, Scalar(0, 0, 255), 2);
+			//drawContours(dst, hull, i, Scalar(0, 0, 255), 2);
 		}
 
 		vector<Moments> mu(contours.size());
@@ -210,7 +188,7 @@ void video2()
 		{
 			mc = Point2f(mu[i].m10 / mu[i].m00, mu[i].m01 / mu[i].m00);
 		}
-		//circle(dst, mc, 50, Scalar(255, 0, 0), 2);
+		circle(dst, mc, 10, Scalar(255, 0, 0), -1);
 
 		backGround = img.clone();
 
@@ -247,233 +225,144 @@ void video2()
 						if (flag_color[0] == 1)
 						{
 							circle(out1, Point(110, 90), 50, Scalar(0, 0, 255), -1);
-							flag_color[0] = 0;
-							if (flag_color[1] == 1)
-							{
-								circle(out1, Point(210, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[1] = 0;
-							}
-							else
-							{
-								circle(out1, Point(210, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[1] = 1;
-
-							}
-
-						    if(flag_color[4] == 1)
-							{
-								circle(out1, Point(110, 190), 50, Scalar(0, 0, 255), -1);
-								flag_color[4] = 0;
-							}
-							else
-							{
-								circle(out1, Point(110, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[4] = 1;
-
-							}
+							flag_color[0] = 0;							
 
 						}
 						else
 						{
 							flag_color[0] = 1;
-							circle(out1, Point(110, 90), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(110, 90), 50, Scalar(0, 255, 0), -1);
 
-							if (flag_color[1] == 1)
-							{
-								circle(out1, Point(210, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[1] = 0;
-							}
-							else
-							{
-								circle(out1, Point(210, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[1] = 1;
-
-							}
-
-							if (flag_color[4] == 1)
-							{
-								circle(out1, Point(110, 190), 50, Scalar(0, 0, 255), -1);
-								flag_color[4] = 0;
-							}
-							else
-							{
-								circle(out1, Point(110, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[4] = 1;
-
-							}
-							
 						}
-						
+						if (flag_color[1] == 1)
+						{
+							circle(out1, Point(210, 90), 50, Scalar(0, 0, 255), -1);
+							flag_color[1] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 90), 50, Scalar(0, 255, 0), -1);
+							flag_color[1] = 1;
+
+						}
+
+						if (flag_color[4] == 1)
+						{
+							circle(out1, Point(110, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[4] = 0;
+						}
+						else
+						{
+							circle(out1, Point(110, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[4] = 1;
+
+						}
 					}
 					/*************************************************************/ // 2  
-					if (myPoint.x == 210 && myPoint.y == 90)
+					else if (myPoint.x == 210 && myPoint.y == 90)
 					{
 						if (flag_color[1] == 1)
 						{
 							circle(out1, Point(210, 90), 50, Scalar(0, 0, 255), -1);
 							flag_color[1] = 0;
-							if (flag_color[0] == 1)
-							{
-								circle(out1, Point(110, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[0] = 0;
-							}
-							else
-							{
-								circle(out1, Point(110, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[0] = 1;
-
-							}
-
-							if (flag_color[2] == 1)
-							{
-								circle(out1, Point(310, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[2] = 0;
-							}
-							else
-							{
-								circle(out1, Point(310, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[2] = 1;
-
-							}
-							if (flag_color[5] == 1)
-							{
-								circle(out1, Point(210, 190), 50, Scalar(0, 0, 255), -1);
-								flag_color[5] = 0;
-							}
-							else
-							{
-								circle(out1, Point(210, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[5] = 1;
-
-							}
+							
 
 						}
 						else
 						{
 							flag_color[1] = 1;
-							circle(out1, Point(210, 90), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(210, 90), 50, Scalar(0, 255, 0), -1);
 
-							if (flag_color[0] == 1)
-							{
-								circle(out1, Point(110, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[0] = 0;
-							}
-							else
-							{
-								circle(out1, Point(110, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[0] = 1;
+							
+						}
 
-							}
+						if (flag_color[0] == 1)
+						{
+							circle(out1, Point(110, 90), 50, Scalar(0, 0, 255), -1);
+							flag_color[0] = 0;
+						}
+						else
+						{
+							circle(out1, Point(110, 90), 50, Scalar(0, 255, 0), -1);
+							flag_color[0] = 1;
 
-							if (flag_color[2] == 1)
-							{
-								circle(out1, Point(310, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[2] = 0;
-							}
-							else
-							{
-								circle(out1, Point(310, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[2] = 1;
+						}
 
-							}
-							if (flag_color[5] == 1)
-							{
-								circle(out1, Point(210, 190), 50, Scalar(0, 0, 255), -1);
-								flag_color[5] = 0;
-							}
-							else
-							{
-								circle(out1, Point(210, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[5] = 1;
+						if (flag_color[2] == 1)
+						{
+							circle(out1, Point(310, 90), 50, Scalar(0, 0, 255), -1);
+							flag_color[2] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 90), 50, Scalar(0, 255, 0), -1);
+							flag_color[2] = 1;
 
-							}
+						}
+						if (flag_color[5] == 1)
+						{
+							circle(out1, Point(210, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[5] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[5] = 1;
 
 						}
 
 					}
 					/*************************************************************/ 
 					/*************************************************************/ // 3 
-					if (myPoint.x == 310 && myPoint.y == 90)
+					else if (myPoint.x == 310 && myPoint.y == 90)
 					{
 						if (flag_color[2] == 1)
 						{
 							circle(out1, Point(310, 90), 50, Scalar(0, 0, 255), -1);
 							flag_color[2] = 0;
-							if (flag_color[1] == 1)
-							{
-								circle(out1, Point(210, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[1] = 0;
-							}
-							else
-							{
-								circle(out1, Point(210, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[1] = 1;
-
-							}
-
-							if (flag_color[3] == 1)
-							{
-								circle(out1, Point(410, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[3] = 0;
-							}
-							else
-							{
-								circle(out1, Point(410, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[3] = 1;
-
-							}
-							if (flag_color[6] == 1)
-							{
-								circle(out1, Point(310, 190), 50, Scalar(0, 0, 255), -1);
-								flag_color[6] = 0;
-							}
-							else
-							{
-								circle(out1, Point(310, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[6] = 1;
-
-							}
+							
 
 						}
 						else
 						{
 							flag_color[2] = 1;
-							circle(out1, Point(310, 90), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(310, 90), 50, Scalar(0, 255, 0), -1);
 
-							if (flag_color[1] == 1)
-							{
-								circle(out1, Point(210, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[1] = 0;
-							}
-							else
-							{
-								circle(out1, Point(210, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[1] = 1;
+							
 
-							}
+						}
+						if (flag_color[1] == 1)
+						{
+							circle(out1, Point(210, 90), 50, Scalar(0, 0, 255), -1);
+							flag_color[1] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 90), 50, Scalar(0, 255, 0), -1);
+							flag_color[1] = 1;
 
-							if (flag_color[3] == 1)
-							{
-								circle(out1, Point(410, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[3] = 0;
-							}
-							else
-							{
-								circle(out1, Point(410, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[3] = 1;
+						}
 
-							}
-							if (flag_color[6] == 1)
-							{
-								circle(out1, Point(310, 190), 50, Scalar(0, 0, 255), -1);
-								flag_color[6] = 0;
-							}
-							else
-							{
-								circle(out1, Point(310, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[6] = 1;
+						if (flag_color[3] == 1)
+						{
+							circle(out1, Point(410, 90), 50, Scalar(0, 0, 255), -1);
+							flag_color[3] = 0;
+						}
+						else
+						{
+							circle(out1, Point(410, 90), 50, Scalar(0, 255, 0), -1);
+							flag_color[3] = 1;
 
-							}
+						}
+						if (flag_color[6] == 1)
+						{
+							circle(out1, Point(310, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[6] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[6] = 1;
 
 						}
 
@@ -481,66 +370,42 @@ void video2()
 					/*************************************************************/
 					
 					/*************************************************************/ // 4
-					if (myPoint.x == 410 && myPoint.y == 90)
+					else if (myPoint.x == 410 && myPoint.y == 90)
 					{
 						if (flag_color[3] == 1)
 						{
 							circle(out1, Point(410, 90), 50, Scalar(0, 0, 255), -1);
 							flag_color[3] = 0;
-							if (flag_color[2] == 1)
-							{
-								circle(out1, Point(310, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[2] = 0;
-							}
-							else
-							{
-								circle(out1, Point(310, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[2] = 1;
-
-							}
-
-							if (flag_color[7] == 1)
-							{
-								circle(out1, Point(410, 190), 50, Scalar(0, 0, 255), -1);
-								flag_color[7] = 0;
-							}
-							else
-							{
-								circle(out1, Point(410, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[7] = 1;
-
-							}
+							
 
 						}
 						else
 						{
 							flag_color[3] = 1;
-							circle(out1, Point(410, 90), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(410, 90), 50, Scalar(0, 255, 0), -1);
 
-							if (flag_color[2] == 1)
-							{
-								circle(out1, Point(310, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[2] = 0;
-							}
-							else
-							{
-								circle(out1, Point(310, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[2] = 1;
+						}
+						if (flag_color[2] == 1)
+						{
+							circle(out1, Point(310, 90), 50, Scalar(0, 0, 255), -1);
+							flag_color[2] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 90), 50, Scalar(0, 255, 0), -1);
+							flag_color[2] = 1;
 
-							}
+						}
 
-							if (flag_color[7] == 1)
-							{
-								circle(out1, Point(410, 190), 50, Scalar(0, 0, 255), -1);
-								flag_color[7] = 0;
-							}
-							else
-							{
-								circle(out1, Point(410, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[7] = 1;
-
-							}
-							
+						if (flag_color[7] == 1)
+						{
+							circle(out1, Point(410, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[7] = 0;
+						}
+						else
+						{
+							circle(out1, Point(410, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[7] = 1;
 
 						}
 
@@ -549,98 +414,62 @@ void video2()
 
 
 					/*************************************************************/ // 5
-					if (myPoint.x == 110 && myPoint.y == 190)
+					else if (myPoint.x == 110 && myPoint.y == 190)
 					{
 						if (flag_color[4] == 1)
 						{
 							circle(out1, Point(110, 190), 50, Scalar(0, 0, 255), -1);
 							flag_color[4] = 0;
-							if (flag_color[0] == 1)
-							{
-								circle(out1, Point(110, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[0] = 0;
-							}
-							else
-							{
-								circle(out1, Point(110, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[0] = 1;
-
-							}
-
-							if (flag_color[5] == 1)
-							{
-								circle(out1, Point(210, 190), 50, Scalar(0, 0, 255), -1);
-								flag_color[5] = 0;
-							}
-							else
-							{
-								circle(out1, Point(210, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[5] = 1;
-
-							}
-							if (flag_color[8] == 1)
-							{
-								circle(out1, Point(110, 290), 50, Scalar(0, 0, 255), -1);
-								flag_color[8] = 0;
-							}
-							else
-							{
-								circle(out1, Point(110, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[8] = 1;
-
-							}
-
+							
 
 						}
 						else
 						{
 							flag_color[4] = 1;
-							circle(out1, Point(110, 190), 25, Scalar(0, 255, 0), -1);
-
-							if (flag_color[0] == 1)
-							{
-								circle(out1, Point(110, 90), 50, Scalar(0, 0, 255), -1);
-								flag_color[0] = 0;
-							}
-							else
-							{
-								circle(out1, Point(110, 90), 25, Scalar(0, 255, 0), -1);
-								flag_color[0] = 1;
-
-							}
-
-							if (flag_color[5] == 1)
-							{
-								circle(out1, Point(210, 190), 50, Scalar(0, 0, 255), -1);
-								flag_color[5] = 0;
-							}
-							else
-							{
-								circle(out1, Point(210, 190), 25, Scalar(0, 255, 0), -1);
-								flag_color[5] = 1;
-
-							}
-
-							if (flag_color[8] == 1)
-							{
-								circle(out1, Point(110, 290), 50, Scalar(0, 0, 255), -1);
-								flag_color[8] = 0;
-							}
-							else
-							{
-								circle(out1, Point(110, 290), 25, Scalar(0, 255, 0), -1);
-								flag_color[8] = 1;
-
-							}
-
+							circle(out1, Point(110, 190), 50, Scalar(0, 255, 0), -1);
 
 						}
+						if (flag_color[0] == 1)
+						{
+							circle(out1, Point(110, 90), 50, Scalar(0, 0, 255), -1);
+							flag_color[0] = 0;
+						}
+						else
+						{
+							circle(out1, Point(110, 90), 50, Scalar(0, 255, 0), -1);
+							flag_color[0] = 1;
+
+						}
+
+						if (flag_color[5] == 1)
+						{
+							circle(out1, Point(210, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[5] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[5] = 1;
+
+						}
+						if (flag_color[8] == 1)
+						{
+							circle(out1, Point(110, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[8] = 0;
+						}
+						else
+						{
+							circle(out1, Point(110, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[8] = 1;
+
+						}
+
 
 					}
 					/*************************************************************/
 
 					/*************************************************************/ // 6
-					if (myPoint.x == 210 && myPoint.y == 190)
+					else if (myPoint.x == 210 && myPoint.y == 190)
 					{
 						if (flag_color[5] == 1)
 						{
@@ -651,7 +480,7 @@ void video2()
 						else
 						{
 							flag_color[5] = 1;
-							circle(out1, Point(210, 190), 25, Scalar(0, 255, 0), -1);		
+							circle(out1, Point(210, 190), 50, Scalar(0, 255, 0), -1);		
 
 						}
 						if (flag_color[1] == 1)
@@ -661,7 +490,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(210, 90), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(210, 90), 50, Scalar(0, 255, 0), -1);
 							flag_color[1] = 1;
 
 						}
@@ -673,7 +502,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(110, 190), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(110, 190), 50, Scalar(0, 255, 0), -1);
 							flag_color[4] = 1;
 
 						}
@@ -684,7 +513,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(310, 190), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(310, 190), 50, Scalar(0, 255, 0), -1);
 							flag_color[6] = 1;
 
 						}if (flag_color[9] == 1)
@@ -694,7 +523,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(210, 290), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(210, 290), 50, Scalar(0, 255, 0), -1);
 							flag_color[9] = 1;
 
 						}
@@ -704,7 +533,7 @@ void video2()
 					/*************************************************************/
 
 					/*************************************************************/ // 7
-					if (myPoint.x == 310 && myPoint.y == 190)
+					else if (myPoint.x == 310 && myPoint.y == 190)
 					{
 						if (flag_color[6] == 1)
 						{
@@ -715,7 +544,7 @@ void video2()
 						else
 						{
 							flag_color[6] = 1;
-							circle(out1, Point(310, 190), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(310, 190), 50, Scalar(0, 255, 0), -1);
 
 						}
 						if (flag_color[2] == 1)
@@ -725,7 +554,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(310, 90), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(310, 90), 50, Scalar(0, 255, 0), -1);
 							flag_color[2] = 1;
 
 						}
@@ -737,7 +566,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(210, 190), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(210, 190), 50, Scalar(0, 255, 0), -1);
 							flag_color[5] = 1;
 
 						}
@@ -748,7 +577,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(410, 190), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(410, 190), 50, Scalar(0, 255, 0), -1);
 							flag_color[7] = 1;
 
 						}if (flag_color[10] == 1)
@@ -758,7 +587,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(310, 290), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(310, 290), 50, Scalar(0, 255, 0), -1);
 							flag_color[10] = 1;
 
 						}
@@ -768,7 +597,7 @@ void video2()
 					/*************************************************************/
 
 					/*************************************************************/ // 8
-					if (myPoint.x == 410 && myPoint.y == 190)
+					else if (myPoint.x == 410 && myPoint.y == 190)
 					{
 						if (flag_color[7] == 1)
 						{
@@ -779,7 +608,7 @@ void video2()
 						else
 						{
 							flag_color[7] = 1;
-							circle(out1, Point(410, 190), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(410, 190), 50, Scalar(0, 255, 0), -1);
 
 						}
 						if (flag_color[3] == 1)
@@ -789,7 +618,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(410, 90), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(410, 90), 50, Scalar(0, 255, 0), -1);
 							flag_color[3] = 1;
 
 						}
@@ -801,7 +630,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(310, 190), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(310, 190), 50, Scalar(0, 255, 0), -1);
 							flag_color[6] = 1;
 
 						}
@@ -812,7 +641,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(410, 290), 25, Scalar(0, 255, 0), -1);
+							circle(out1, Point(410, 290), 50, Scalar(0, 255, 0), -1);
 							flag_color[11] = 1;
 
 						}
@@ -821,12 +650,486 @@ void video2()
 					}
 					/*************************************************************/
 
+					/*************************************************************/ // 8
+					else if (myPoint.x == 410 && myPoint.y == 190)
+					{
+						if (flag_color[7] == 1)
+						{
+							circle(out1, Point(410, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[7] = 0;
+
+						}
+						else
+						{
+							flag_color[7] = 1;
+							circle(out1, Point(410, 190), 50, Scalar(0, 255, 0), -1);
+
+						}
+						if (flag_color[3] == 1)
+						{
+							circle(out1, Point(410, 90), 50, Scalar(0, 0, 255), -1);
+							flag_color[3] = 0;
+						}
+						else
+						{
+							circle(out1, Point(410, 90), 50, Scalar(0, 255, 0), -1);
+							flag_color[3] = 1;
+
+						}
+
+						if (flag_color[6] == 1)
+						{
+							circle(out1, Point(310, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[6] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[6] = 1;
+
+						}
+						if (flag_color[11] == 1)
+						{
+							circle(out1, Point(410, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[11] = 0;
+						}
+						else
+						{
+							circle(out1, Point(410, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[11] = 1;
+
+						}
+
+
+					}
+					/*************************************************************/
+
+					/*************************************************************/ // 9
+					else if (myPoint.x == 110 && myPoint.y == 290)
+					{
+						if (flag_color[8] == 1)
+						{
+							circle(out1, Point(110, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[8] = 0;
+
+						}
+						else
+						{
+							flag_color[8] = 1;
+							circle(out1, Point(110, 290), 50, Scalar(0, 255, 0), -1);
+
+						}
+						if (flag_color[4] == 1)
+						{
+							circle(out1, Point(110, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[4] = 0;
+						}
+						else
+						{
+							circle(out1, Point(110, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[4] = 1;
+
+						}
+
+						if (flag_color[9] == 1)
+						{
+							circle(out1, Point(210, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[9] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[9] = 1;
+
+						}
+						if (flag_color[12] == 1)
+						{
+							circle(out1, Point(110, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[12] = 0;
+						}
+						else
+						{
+							circle(out1, Point(110, 390), 50, Scalar(0, 255, 0), -1);
+							flag_color[12] = 1;
+
+						}
+
+					}
+					/*************************************************************/
+
+					/*************************************************************/ // 10
+					else if (myPoint.x == 210 && myPoint.y == 290)
+					{
+						if (flag_color[9] == 1)
+						{
+							circle(out1, Point(210, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[9] = 0;
+
+						}
+						else
+						{
+							flag_color[9] = 1;
+							circle(out1, Point(210, 290), 50, Scalar(0, 255, 0), -1);
+
+						}
+						if (flag_color[5] == 1)
+						{
+							circle(out1, Point(210, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[5] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[5] = 1;
+
+						}
+
+						if (flag_color[8] == 1)
+						{
+							circle(out1, Point(110, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[8] = 0;
+						}
+						else
+						{
+							circle(out1, Point(110, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[8] = 1;
+
+						}
+						if (flag_color[10] == 1)
+						{
+							circle(out1, Point(310, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[10] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[10] = 1;
+
+						}
+						if (flag_color[13] == 1)
+						{
+							circle(out1, Point(210, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[13] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 390), 50, Scalar(0, 255, 0), -1);
+							flag_color[13] = 1;
+
+						}
+
+					}
+					/*************************************************************/ // 11
+					else if (myPoint.x == 310 && myPoint.y == 290)
+					{
+						if (flag_color[10] == 1)
+						{
+							circle(out1, Point(310, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[10] = 0;
+
+						}
+						else
+						{
+							flag_color[10] = 1;
+							circle(out1, Point(310, 290), 50, Scalar(0, 255, 0), -1);
+
+						}
+						if (flag_color[6] == 1)
+						{
+							circle(out1, Point(310, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[6] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[6] = 1;
+
+						}
+
+						if (flag_color[9] == 1)
+						{
+							circle(out1, Point(210, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[9] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[9] = 1;
+
+						}
+						if (flag_color[11] == 1)
+						{
+							circle(out1, Point(410, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[11] = 0;
+						}
+						else
+						{
+							circle(out1, Point(410, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[11] = 1;
+
+						}
+						if (flag_color[14] == 1)
+						{
+							circle(out1, Point(310, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[14] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 390), 50, Scalar(0, 255, 0), -1);
+							flag_color[14] = 1;
+
+						}
+
+					}
+					/*************************************************************/
+					/*************************************************************/ // 12
+					else if (myPoint.x == 410 && myPoint.y == 290)
+					{
+						if (flag_color[11] == 1)
+						{
+							circle(out1, Point(410, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[11] = 0;
+
+						}
+						else
+						{
+							flag_color[11] = 1;
+							circle(out1, Point(410, 290), 50, Scalar(0, 255, 0), -1);
+
+						}
+						if (flag_color[10] == 1)
+						{
+							circle(out1, Point(310, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[10] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[10] = 1;
+
+						}
+
+						if (flag_color[7] == 1)
+						{
+							circle(out1, Point(410, 190), 50, Scalar(0, 0, 255), -1);
+							flag_color[7] = 0;
+						}
+						else
+						{
+							circle(out1, Point(410, 190), 50, Scalar(0, 255, 0), -1);
+							flag_color[7] = 1;
+
+						}
+						if (flag_color[15] == 1)
+						{
+							circle(out1, Point(410, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[15] = 0;
+						}
+						else
+						{
+							circle(out1, Point(410, 390), 50, Scalar(0, 255, 0), -1);
+							flag_color[15] = 1;
+
+						}
+						
+
+					}
+					/***********************************************************/
+
+					/*************************************************************/ // 13
+					else if (myPoint.x == 110 && myPoint.y == 390)
+					{
+						if (flag_color[12] == 1)
+						{
+							circle(out1, Point(110, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[12] = 0;
+
+						}
+						else
+						{
+							flag_color[12] = 1;
+							circle(out1, Point(110, 390), 50, Scalar(0, 255, 0), -1);
+
+						}
+						if (flag_color[8] == 1)
+						{
+							circle(out1, Point(110, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[8] = 0;
+						}
+						else
+						{
+							circle(out1, Point(110, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[8] = 1;
+
+						}
+
+						if (flag_color[13] == 1)
+						{
+							circle(out1, Point(210, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[13] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 390), 50, Scalar(0, 255, 0), -1);
+							flag_color[13] = 1;
+
+						}
+						
+					}
+					/***********************************************************/
+
+					/*************************************************************/ // 14
+					else if (myPoint.x == 210 && myPoint.y == 390)
+					{
+						if (flag_color[13] == 1)
+						{
+							circle(out1, Point(210, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[13] = 0;
+
+						}
+						else
+						{
+							flag_color[13] = 1;
+							circle(out1, Point(210, 390), 50, Scalar(0, 255, 0), -1);
+
+						}
+						if (flag_color[9] == 1)
+						{
+							circle(out1, Point(210, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[9] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[9] = 1;
+
+						}
+
+						if (flag_color[12] == 1)
+						{
+							circle(out1, Point(110, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[12] = 0;
+						}
+						else
+						{
+							circle(out1, Point(110, 390), 50, Scalar(0, 255, 0), -1);
+							flag_color[12] = 1;
+
+						}
+						if (flag_color[14] == 1)
+						{
+							circle(out1, Point(310, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[14] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 390), 50, Scalar(0, 255, 0), -1);
+							flag_color[14] = 1;
+
+						}
+
+					}
+					/***********************************************************/
+
+					/*************************************************************/ // 15
+					else if (myPoint.x == 310 && myPoint.y == 390)
+					{
+						if (flag_color[14] == 1)
+						{
+							circle(out1, Point(310, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[14] = 0;
+
+						}
+						else
+						{
+							flag_color[14] = 1;
+							circle(out1, Point(310, 390), 50, Scalar(0, 255, 0), -1);
+
+						}
+						if (flag_color[10] == 1)
+						{
+							circle(out1, Point(310, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[10] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[10] = 1;
+
+						}
+
+						if (flag_color[13] == 1)
+						{
+							circle(out1, Point(210, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[13] = 0;
+						}
+						else
+						{
+							circle(out1, Point(210, 390), 50, Scalar(0, 255, 0), -1);
+							flag_color[13] = 1;
+
+						}
+						if (flag_color[15] == 1)
+						{
+							circle(out1, Point(410, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[15] = 0;
+						}
+						else
+						{
+							circle(out1, Point(410, 390), 50, Scalar(0, 255, 0), -1);
+							flag_color[15] = 1;
+
+						}
+
+					}
+					/***********************************************************/
+					/*************************************************************/ // 16
+					else if (myPoint.x == 410 && myPoint.y == 390)
+					{
+						if (flag_color[15] == 1)
+						{
+							circle(out1, Point(410, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[15] = 0;
+
+						}
+						else
+						{
+							flag_color[15] = 1;
+							circle(out1, Point(410, 390), 50, Scalar(0, 255, 0), -1);
+
+						}
+						if (flag_color[11] == 1)
+						{
+							circle(out1, Point(410, 290), 50, Scalar(0, 0, 255), -1);
+							flag_color[11] = 0;
+						}
+						else
+						{
+							circle(out1, Point(410, 290), 50, Scalar(0, 255, 0), -1);
+							flag_color[11] = 1;
+
+						}
+
+						if (flag_color[14] == 1)
+						{
+							circle(out1, Point(310, 390), 50, Scalar(0, 0, 255), -1);
+							flag_color[14] = 0;
+						}
+						else
+						{
+							circle(out1, Point(310, 390), 50, Scalar(0, 255, 0), -1);
+							flag_color[14] = 1;
+
+						}
+					
+					}
+					/***********************************************************/
 
 					
 					/********************************************************/
 					subtract(out, out1, out);
 					//circle(out, myPoint, 50, Scalar(0, 255, 0), 2);
-					waitKey(1000);
+					waitKey(200);
 				}
 			}
 
@@ -863,129 +1166,3 @@ void video2()
 
 
 
-//沒用到的
-/*void video() //皮膚色
-{
-	VideoCapture cap(0);
-	Mat frame, frameHSV;
-	Mat Sourceimage = imread("kanahei.jpg");
-	vector< std::vector<cv::Point> > OriginalContours;
-	vector<Vec4i > hierarchy;
-	vector<vector<Point>> FinalContours;
-	vector<Point> hull;
-	int i, j;
-	int Width = cap.get(CV_CAP_PROP_FRAME_WIDTH), Height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
-	float fHeight = ((float)2 / 3 - (float)1 / 7) * Height;
-	while (1) {
-
-		cap >> frame;
-		if (frame.empty())
-			break;
-
-		flip(frame, frame, 1); //左右反轉
-		GaussianBlur(frame, frame, Size(7, 7), 2.0, 1.5); //高斯模糊
-		cvtColor(frame, frameHSV, CV_BGR2HSV); //通道轉換
-		Mat mask(frame.rows, frame.cols, CV_8UC1);
-		inRange(frameHSV, Scalar(5, 30, 30), Scalar(40, 170, 256), mask);
-		erode(mask, mask, Mat(5, 5, CV_8U), Point(-1, -1), 1); //去除多餘亮點
-
-		//Mat grayscaleMat(frame.size(), CV_8U);
-		//cvtColor(frame, grayscaleMat, CV_BGR2GRAY);
-
-
-		OriginalContours.clear();
-		hierarchy.clear();
-		FinalContours.clear();
-		findContours(mask, OriginalContours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE); //找輪廓
-		// 去除多餘輪廓
-		for (i = 0; i < OriginalContours.size(); i++)
-		{
-			if (fabs(contourArea(Mat(OriginalContours[i]))) > 12000)
-			{
-				FinalContours.push_back(OriginalContours[i]);
-			}
-		}
-		//cv::drawContours(frame, FinalContours, -1, Scalar(0, 0, 255), 3); //畫輪廓
-
-		//找凸出輪廓
-		int hullcount;
-		int iNumOfContours = FinalContours.size();
-		Point top;
-
-
-		for (j = 0; j < iNumOfContours; j++)
-		{
-			convexHull(Mat(FinalContours[j]), hull, true);
-			hullcount = (int)hull.size();
-			//
-			for (i = 0; i < hullcount - 1; i++)
-			{
-				line(frame, hull[i + 1], hull[i], Scalar(255, 0, 0), 2, CV_AA);
-				circle(frame, hull[(hullcount - 1) / 2], 4, Scalar(0, 255, 0), 1); //綠點
-
-			}
-			//line(frame, hull[hullcount - 1], hull[0], Scalar(255, 0, 0), 2, CV_AA);
-			//line(frame, top, top, Scalar(255, 0, 255), 18, CV_AA);
-
-			/*Point temp;
-
-
-			for (i = 0; i < (int)hull.size() - 1; i++) //找出綠點位置
-			{
-				for (j = 0; j < (int)hull.size() - 1; j++)
-				{
-					if (hull[i].x > hull[i + 1].x || hull[i].y > hull[i + 1].y)
-					{
-						temp.x = hull[i].x;
-						hull[i].x = hull[i + 1].x;
-						hull[i + 1].x = temp.x;
-					}
-				}
-			}*//*
-
-		}
-
-
-		imshow("Extracted Frame", frame);
-		imshow("Frame", frameHSV);
-
-		char c = (char)waitKey(25); //按esc結束程式
-		if (c == 27)
-			break;
-
-	}
-
-	for (i = 0; i < (int)hull.size(); i++) //找出綠點位置
-		cout << hull[i];
-
-}*/
-/*void hsvreg(Mat img) {
-	//Mat img = imread("蓝色笔筒.jpg", 1);
-	Mat imgHSV;
-	//蓝色笔筒颜色的HSV范围
-	int iLowH = 100 / 2;
-	int iHighH = 120 / 2;
-	int iLowS = 50 * 255 / 100;
-	int iHighS = 70 * 255 / 100;
-	int iLowV = 40 * 255 / 100;
-	int iHighV = 50 * 255 / 100;
-	cvtColor(img, imgHSV, COLOR_BGR2HSV);//转为HSV
-	imwrite("hsv.jpg", imgHSV);
-	Mat imgThresholded;
-	inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV), imgThresholded);
-	//Threshold the image
-	//开操作 (去除一些噪点)  如果二值化后图片干扰部分依然很多，增大下面的size
-	Mat element = getStructuringElement(MORPH_RECT, Size(5, 5));
-	morphologyEx(imgThresholded, imgThresholded, MORPH_OPEN, element);
-	//闭操作 (连接一些连通域)
-	morphologyEx(imgThresholded, imgThresholded, MORPH_CLOSE, element);
-	namedWindow("Thresholded Image", CV_WINDOW_NORMAL);
-	imshow("Thresholded Image", imgThresholded);
-	//这里是自定义的求取形心函数，当然用连通域计算更好
-	//Point center;
-	//center = GetCenterPoint(imgThresholded);//获取二值化白色区域的形心
-	//circle(img, center, 100, Scalar(0,0,255), 5, 8, 0);//绘制目标位置
-	imwrite("end.jpg", img);
-	waitKey(0);
-
-}*/
