@@ -198,7 +198,7 @@ void video2()
 		//imshow("Thresholded Image", dst);
 
 		//imshow("d", d );
-		
+
 		for (int n = 0; n < pointList.size(); n++) {
 			Point myPoint = pointList[n];
 			//if()
@@ -208,7 +208,7 @@ void video2()
 			if (mc.x >= myPoint.x - 30 & mc.x <= myPoint.x + 30) {
 				if (mc.y >= myPoint.y - 30 & mc.y <= myPoint.y + 30) {
 					Scalar color = out.at<Vec3b>(myPoint.x + 50, myPoint.y + 50);
-					
+
 					if (color == Scalar(0, 0, 255)) {
 						circle(out1, myPoint, 50, Scalar(0, 0, 255), -1);
 						subtract(out, out1, out);
@@ -217,15 +217,15 @@ void video2()
 					}
 					circle(out1, myPoint, 50, Scalar(0, 0, 255), -1);
 
-					
-					
+
+
 					/***********************************************/    //1
 					if (myPoint.x == 110 && myPoint.y == 90)
 					{
 						if (flag_color[0] == 1)
 						{
 							circle(out1, Point(110, 90), 50, Scalar(0, 0, 255), -1);
-							flag_color[0] = 0;							
+							flag_color[0] = 0;
 
 						}
 						else
@@ -265,7 +265,7 @@ void video2()
 						{
 							circle(out1, Point(210, 90), 50, Scalar(0, 0, 255), -1);
 							flag_color[1] = 0;
-							
+
 
 						}
 						else
@@ -273,7 +273,7 @@ void video2()
 							flag_color[1] = 1;
 							circle(out1, Point(210, 90), 50, Scalar(0, 255, 0), -1);
 
-							
+
 						}
 
 						if (flag_color[0] == 1)
@@ -312,7 +312,7 @@ void video2()
 						}
 
 					}
-					/*************************************************************/ 
+					/*************************************************************/
 					/*************************************************************/ // 3 
 					else if (myPoint.x == 310 && myPoint.y == 90)
 					{
@@ -320,7 +320,7 @@ void video2()
 						{
 							circle(out1, Point(310, 90), 50, Scalar(0, 0, 255), -1);
 							flag_color[2] = 0;
-							
+
 
 						}
 						else
@@ -328,7 +328,7 @@ void video2()
 							flag_color[2] = 1;
 							circle(out1, Point(310, 90), 50, Scalar(0, 255, 0), -1);
 
-							
+
 
 						}
 						if (flag_color[1] == 1)
@@ -368,7 +368,7 @@ void video2()
 
 					}
 					/*************************************************************/
-					
+
 					/*************************************************************/ // 4
 					else if (myPoint.x == 410 && myPoint.y == 90)
 					{
@@ -376,7 +376,7 @@ void video2()
 						{
 							circle(out1, Point(410, 90), 50, Scalar(0, 0, 255), -1);
 							flag_color[3] = 0;
-							
+
 
 						}
 						else
@@ -420,7 +420,7 @@ void video2()
 						{
 							circle(out1, Point(110, 190), 50, Scalar(0, 0, 255), -1);
 							flag_color[4] = 0;
-							
+
 
 						}
 						else
@@ -459,7 +459,7 @@ void video2()
 						}
 						else
 						{
-							circle(out1, Point(110, 190), 50, Scalar(0, 255, 0), -1);
+							circle(out1, Point(110, 290), 50, Scalar(0, 255, 0), -1);
 							flag_color[8] = 1;
 
 						}
@@ -474,13 +474,13 @@ void video2()
 						if (flag_color[5] == 1)
 						{
 							circle(out1, Point(210, 190), 50, Scalar(0, 0, 255), -1);
-							flag_color[5] = 0;			
+							flag_color[5] = 0;
 
 						}
 						else
 						{
 							flag_color[5] = 1;
-							circle(out1, Point(210, 190), 50, Scalar(0, 255, 0), -1);		
+							circle(out1, Point(210, 190), 50, Scalar(0, 255, 0), -1);
 
 						}
 						if (flag_color[1] == 1)
@@ -931,7 +931,7 @@ void video2()
 							flag_color[15] = 1;
 
 						}
-						
+
 
 					}
 					/***********************************************************/
@@ -974,7 +974,7 @@ void video2()
 							flag_color[13] = 1;
 
 						}
-						
+
 					}
 					/***********************************************************/
 
@@ -1121,11 +1121,11 @@ void video2()
 							flag_color[14] = 1;
 
 						}
-					
+
 					}
 					/***********************************************************/
 
-					
+
 					/********************************************************/
 					subtract(out, out1, out);
 					//circle(out, myPoint, 50, Scalar(0, 255, 0), 2);
@@ -1135,16 +1135,34 @@ void video2()
 
 		}
 
-		
+
 
 		absdiff(out, out1, out);
 
-		imshow("o", out1);
+		//imshow("o", out1);
 		imshow("finish", out);
 
 		Mat red;
 		inRange(out, Scalar(0, 100, 120), Scalar(10, 255, 255), red);
-		imshow("red", red);
+		//imshow("red", red);
+		int success = 1;
+		
+		for (int i = 0; i < 15; i++)
+		{
+			if (flag_color[i] != 1)
+				success = 0;
+		}
+		
+		
+		if (success == 1)
+		{
+			Mat success_img = imread("success.png");
+			imshow("success", success_img);
+			waitKey(20000);
+			
+		}
+
+
 
 
 		//setMouseCallback("Splite image", OnMouseAction);
