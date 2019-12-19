@@ -62,21 +62,21 @@ void video()
 	vector<Point> hull;
 
 	//藍色
-	/*int iLowH = 100;
+	int iLowH = 100;
 	int iHighH = 140;
 	int iLowS = 40;
 	int iHighS = 255;
 	int iLowV = 40;
 	int iHighV = 255;
-	*/
+	
 	//綠色
-	int iLowH = 78;
+	/*int iLowH = 78;
 	int iHighH = 99;
 	int iLowS = 43;
 	int iHighS = 255;
 	int iLowV = 46;
 	int iHighV = 255;
-	
+	*/
 	cap >> img;
 	
 	Mat test = creatImg(img.rows, img.cols, img.type());
