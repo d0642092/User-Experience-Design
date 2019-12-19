@@ -6,6 +6,8 @@
 #include <time.h>
 #include <iostream>
 #include <windows.h>
+#include <cstdlib> /* 亂數相關函數 */
+#include <ctime>   /* 時間相關函數 */
 
 using namespace cv;
 using namespace std;
@@ -13,7 +15,7 @@ using namespace std;
 //變數
 vector<Point> pointList;
 int PtoP = 104;
-int z = 10;
+int z1 = 20;
 //fucntion
 void video();
 Mat creatImg(int x, int y, int z);
@@ -25,16 +27,23 @@ int main(int argc, char** argv)
 }
 
 Mat creatImg(int x, int y, int z) {
-
+	srand(time(NULL));
+	
 	Mat img = Mat::zeros(x, y, z);
 	int i, j;
 	for (j = 90; j <= y - 160; j += PtoP) {
 		for (i = 110; i < x; i += PtoP) {
-			circle(img, Point(i, j), 50, Scalar(0, 0, 255), 2);
-			circle(img, Point(i, j), z, Scalar(125, 125, 125), 2);
+			
+			int random = rand() % 2;
+			if (random == 1) {
+				circle(img, Point(i, j), 50, Scalar(0, 0, 255), 2);
+			}
+			else {
+				circle(img, Point(i, j), 50, Scalar(0, 255, 0), 2);
+			}
+			circle(img, Point(i, j), z1, Scalar(125, 125, 125), 2);
 			pointList.push_back(Point(i, j));
 		}
-
 	}
 	return img;
 }
@@ -52,24 +61,21 @@ void video()
 	vector<vector<Point>> FinalContours;
 	vector<Point> hull;
 
-
-
-
 	//藍色
-	int iLowH = 100;
+	/*int iLowH = 100;
 	int iHighH = 140;
 	int iLowS = 40;
 	int iHighS = 255;
 	int iLowV = 40;
 	int iHighV = 255;
-	
+	*/
 	//綠色
-	/*int iLowH = 78;
+	int iLowH = 78;
 	int iHighH = 99;
 	int iLowS = 43;
 	int iHighS = 255;
 	int iLowV = 46;
-	int iHighV = 255;*/
+	int iHighV = 255;
 	
 	cap >> img;
 	
@@ -77,11 +83,13 @@ void video()
 	Mat out1 = Mat::zeros(img.rows, img.cols, img.type());;
 	Mat out2 = Mat::zeros(img.rows, img.cols, img.type());;
 	Mat backGround = Mat::zeros(img.rows, img.cols, img.type());
+	
 	Mat out;
 	Mat d;
 
-	int flag, flag2;
+	int flag,flag2;
 	int successful = 0;
+	int X_position=0, Y_position=0;
 
 	while (1) {
 
@@ -116,6 +124,7 @@ void video()
 		Mat dst = img.clone();
 		vector<vector<Point>> hull(contours.size());
 		cvtColor(imgThresholded, imgThresholded, CV_GRAY2BGR);
+
 		for (int i = 0; i < contours.size(); i++) { //畫出區塊
 			convexHull(contours[i], hull[i]);
 		//	drawContours(dst, hull, i, Scalar(0, 0, 255), 2);
@@ -134,10 +143,7 @@ void video()
 			mc = Point2f(mu[i].m10 / mu[i].m00, mu[i].m01 / mu[i].m00);
 		}
 		circle(dst, mc, 10, Scalar(255, 0, 0), -1);
-		backGround = img.clone();
 
-		cv::absdiff(backGround, dst, d);
-		
 
 		//判斷
 		for (int n = 0; n < pointList.size(); n++) {
@@ -152,57 +158,46 @@ void video()
 		if (successful == 1) {			
 			break;
 		}
-
-
+		
+		
 		//顏色轉換
 		for (int n = 0; n < pointList.size(); n++) {
-
+			
 			Point myPoint = pointList[n];
 			flag = 0;
 			flag2 = 0;
+			
 			if (mc.x == 0 & mc.y == 0) {
 				break;
 			}
-			
-			if (mc.x >= myPoint.x-z  & mc.x <= myPoint.x+z ) {
-				if (mc.y >= myPoint.y-z  & mc.y <= myPoint.y+z ) {
 
-					//cv::absdiff(out3, out3, out3);
+			// 判斷是否在同一個圈
+			if (X_position != 0 & Y_position != 0) {
+				if (mc.x >= X_position - z1 & mc.x <= X_position + z1) {
+					if (mc.y >= Y_position - z1 & mc.y <= Y_position + z1) {
+						break;
+					}
+				}
+			}
+			
+			
+			if (mc.x >= myPoint.x - z1 & mc.x <= myPoint.x + z1) {
+				if (mc.y >= myPoint.y - z1 & mc.y <= myPoint.y + z1) {
+						
+						
+					X_position = myPoint.x;
+					Y_position = myPoint.y;
+					
+
 					int x = myPoint.x;
 					int y = myPoint.y;
-					
+
 
 					// X軸轉換
 					if (x == 110) {
-						if (test.at<Vec3b>(y, x + 51)[2] == 255 ) {
+						if (test.at<Vec3b>(y, x + 51)[2] == 255) {
 							circle(out1, myPoint, 50, Scalar(0, 0, 255), 2);
-							
-							if (test.at<Vec3b>(y , x+ PtoP-1)[2] == 255) {
-								circle(out1, Point(x + PtoP , y), 50, Scalar(0, 0, 255), 2);
-								flag = 1;
-							}
-							else {
-								circle(out1, Point(x + PtoP, y), 50, Scalar(0, 255, 0), 2);
-							}
-							
-							cv::absdiff(test, out1, out2);
-							test = out2.clone();
-							cv::absdiff(out1, out1, out1);
-							
-							circle(out1, myPoint, 50, Scalar(0, 255, 0), 2);
-							
-							if (flag == 1) {
-								circle(out1, Point(x + PtoP, y), 50, Scalar(0, 255, 0), 2);
-							}
-							else {
-								circle(out1, Point(x + PtoP, y), 50, Scalar(0, 0, 255), 2);
-							}
 
-
-						}
-						else {
-							circle(out1, myPoint, 50, Scalar(0, 255, 0), 2);
-							
 							if (test.at<Vec3b>(y, x + PtoP - 1)[2] == 255) {
 								circle(out1, Point(x + PtoP, y), 50, Scalar(0, 0, 255), 2);
 								flag = 1;
@@ -214,7 +209,33 @@ void video()
 							cv::absdiff(test, out1, out2);
 							test = out2.clone();
 							cv::absdiff(out1, out1, out1);
-							
+								
+							circle(out1, myPoint, 50, Scalar(0, 255, 0), 2);
+								
+							if (flag == 1) {
+								circle(out1, Point(x + PtoP, y), 50, Scalar(0, 255, 0), 2);
+							}
+							else {
+								circle(out1, Point(x + PtoP, y), 50, Scalar(0, 0, 255), 2);
+							}
+
+
+						}
+						else {
+							circle(out1, myPoint, 50, Scalar(0, 255, 0), 2);
+								
+							if (test.at<Vec3b>(y, x + PtoP - 1)[2] == 255) {
+								circle(out1, Point(x + PtoP, y), 50, Scalar(0, 0, 255), 2);
+								flag = 1;
+							}
+							else {
+								circle(out1, Point(x + PtoP, y), 50, Scalar(0, 255, 0), 2);
+							}
+
+							cv::absdiff(test, out1, out2);
+							test = out2.clone();
+							cv::absdiff(out1, out1, out1);
+								
 							circle(out1, myPoint, 50, Scalar(0, 0, 255), 2);
 
 							if (flag == 1) {
@@ -224,14 +245,14 @@ void video()
 								circle(out1, Point(x + PtoP, y), 50, Scalar(0, 0, 255), 2);
 							}
 						}
-						
+
 					}
 					else {
 						if (x + 100 < img.rows) {
-							if (test.at<Vec3b>(y , x+51)[2] == 255) {
+							if (test.at<Vec3b>(y, x + 51)[2] == 255) {
 								circle(out1, myPoint, 50, Scalar(0, 0, 255), 2);
 
-								if (test.at<Vec3b>(y, x + PtoP -1)[2] == 255) {
+								if (test.at<Vec3b>(y, x + PtoP - 1)[2] == 255) {
 									circle(out1, Point(x + PtoP, y), 50, Scalar(0, 0, 255), 2);
 									flag = 1;
 								}
@@ -251,14 +272,14 @@ void video()
 								cv::absdiff(out1, out1, out1);
 
 								circle(out1, myPoint, 50, Scalar(0, 255, 0), 2);
-								
+
 								if (flag == 1) {
 									circle(out1, Point(x + PtoP, y), 50, Scalar(0, 255, 0), 2);
 								}
 								else {
 									circle(out1, Point(x + PtoP, y), 50, Scalar(0, 0, 255), 2);
 								}
-								
+
 								if (flag2 == 1) {
 									circle(out1, Point(x - PtoP, y), 50, Scalar(0, 255, 0), 2);
 								}
@@ -276,7 +297,7 @@ void video()
 								else {
 									circle(out1, Point(x + PtoP, y), 50, Scalar(0, 255, 0), 2);
 								}
-								
+
 								if (test.at<Vec3b>(y, x - PtoP - 1)[2] == 255) {
 									circle(out1, Point(x - PtoP, y), 50, Scalar(0, 0, 255), 2);
 									flag2 = 1;
@@ -306,10 +327,9 @@ void video()
 							}
 						}
 						else {
-							
-							if (test.at<Vec3b>(y , x+51)[2] == 255) {
+							if (test.at<Vec3b>(y, x + 51)[2] == 255) {
 								circle(out1, myPoint, 50, Scalar(0, 0, 255), 2);
-
+									
 								if (test.at<Vec3b>(y, x - PtoP - 1)[2] == 255) {
 									circle(out1, Point(x - PtoP, y), 50, Scalar(0, 0, 255), 2);
 									flag = 1;
@@ -329,7 +349,7 @@ void video()
 								else {
 									circle(out1, Point(x - PtoP, y), 50, Scalar(0, 0, 255), 2);
 								}
-
+									
 							}
 							else {
 								circle(out1, myPoint, 50, Scalar(0, 255, 0), 2);
@@ -341,13 +361,13 @@ void video()
 								else {
 									circle(out1, Point(x - PtoP, y), 50, Scalar(0, 255, 0), 2);
 								}
-
+									
 								cv::absdiff(test, out1, out2);
 								test = out2.clone();
 								cv::absdiff(out1, out1, out1);
 
 								circle(out1, myPoint, 50, Scalar(0, 0, 255), 2);
-
+								
 								if (flag == 1) {
 									circle(out1, Point(x - PtoP, y), 50, Scalar(0, 255, 0), 2);
 								}
@@ -356,50 +376,46 @@ void video()
 								}
 							}
 
-						}	
+						}
 					}
-					
-					cv::absdiff(test, out1, out2);
-					test = out2.clone();
-					cv::absdiff(out1, out1, out1);
-					
-					
+
+
 					//y軸轉換
-					if (y  == 90) {
-						if (test.at<Vec3b>(y+ PtoP - 1, x )[2] == 255) {
-							circle(out1, Point(x , y+PtoP), 50, Scalar(0, 0, 255), 2);
+					if (y == 90) {
+						if (test.at<Vec3b>(y + PtoP - 1, x)[2] == 255) {
+							circle(out1, Point(x, y + PtoP), 50, Scalar(0, 0, 255), 2);
 							flag = 1;
 						}
 						else {
-							circle(out1, Point(x, y+PtoP), 50, Scalar(0, 255, 0), 2);
+							circle(out1, Point(x, y + PtoP), 50, Scalar(0, 255, 0), 2);
 						}
 						cv::absdiff(test, out1, out2);
 						test = out2.clone();
 						cv::absdiff(out1, out1, out1);
-											
+
 
 						if (flag == 1) {
-							circle(out1, Point(x , y+PtoP), 50, Scalar(0, 255, 0), 2);
+							circle(out1, Point(x, y + PtoP), 50, Scalar(0, 255, 0), 2);
 						}
 						else {
-							circle(out1, Point(x , y+PtoP), 50, Scalar(0, 0, 255), 2);
-						}					
+							circle(out1, Point(x, y + PtoP), 50, Scalar(0, 0, 255), 2);
+						}
 					}
-					else{
+					else {
 						if (y + 100 < img.rows) {
-							if (test.at<Vec3b>(y+ PtoP - 1, x )[2] == 255) {
-								circle(out1, Point(x, y+PtoP), 50, Scalar(0, 0, 255), 2);
+							if (test.at<Vec3b>(y + PtoP - 1, x)[2] == 255) {
+								circle(out1, Point(x, y + PtoP), 50, Scalar(0, 0, 255), 2);
 								flag = 1;
 							}
 							else {
-								circle(out1, Point(x, y+PtoP), 50, Scalar(0, 255, 0), 2);
+								circle(out1, Point(x, y + PtoP), 50, Scalar(0, 255, 0), 2);
 							}
-							if (test.at<Vec3b>(y - PtoP - 1, x )[2] == 255) {
-								circle(out1, Point(x , y - PtoP), 50, Scalar(0, 0, 255), 2);
+							if (test.at<Vec3b>(y - PtoP - 1, x)[2] == 255) {
+								circle(out1, Point(x, y - PtoP), 50, Scalar(0, 0, 255), 2);
 								flag2 = 1;
 							}
 							else {
-								circle(out1, Point(x , y - PtoP), 50, Scalar(0, 255, 0), 2);
+								circle(out1, Point(x, y - PtoP), 50, Scalar(0, 255, 0), 2);
 							}
 							cv::absdiff(test, out1, out2);
 							test = out2.clone();
@@ -407,16 +423,16 @@ void video()
 
 
 							if (flag == 1) {
-								circle(out1, Point(x , y+PtoP), 50, Scalar(0, 255, 0), 2);
+								circle(out1, Point(x, y + PtoP), 50, Scalar(0, 255, 0), 2);
 							}
 							else {
-								circle(out1, Point(x , y+PtoP), 50, Scalar(0, 0, 255), 2);
+								circle(out1, Point(x, y + PtoP), 50, Scalar(0, 0, 255), 2);
 							}
 							if (flag2 == 1) {
 								circle(out1, Point(x, y - PtoP), 50, Scalar(0, 255, 0), 2);
 							}
 							else {
-								circle(out1, Point(x , y - PtoP), 50, Scalar(0, 0, 255), 2);
+								circle(out1, Point(x, y - PtoP), 50, Scalar(0, 0, 255), 2);
 							}
 						}
 						else {
@@ -425,12 +441,11 @@ void video()
 								flag = 1;
 							}
 							else {
-								circle(out1, Point(x, y-PtoP), 50, Scalar(0, 255, 0), 2);
+								circle(out1, Point(x, y - PtoP), 50, Scalar(0, 255, 0), 2);
 							}
 							cv::absdiff(test, out1, out2);
 							test = out2.clone();
 							cv::absdiff(out1, out1, out1);
-
 
 
 							if (flag == 1) {
@@ -440,25 +455,24 @@ void video()
 								circle(out1, Point(x, y - PtoP), 50, Scalar(0, 0, 255), 2);
 							}
 						}
-						
+
 					}
 
-					cv::absdiff(test, out1, out2);
-					test = out2.clone();
-					cv::absdiff(out1, out1, out1);
-					
-					Sleep(225);
 					break;
 				}
 			}
 
 		}
+
+		cv::absdiff(test, out1, out2);
+		test = out2.clone();
+		cv::absdiff(out1, out1, out1);
 		
-		cv::absdiff(test, d, out);
+
+		addWeighted(test, 10.0, dst, 0.5, 1, out);
+		//圖形加攝像
 
 		imshow("finish", out);
-
-		imshow("Thresholded Image", dst);
 
 		char c = (char)waitKey(25); //按esc結束程式
 		if (c == 27)
@@ -471,7 +485,5 @@ void video()
 	imshow("congradulation", fin);
 	waitKey(0);
 	cvDestroyAllWindows();
+	return;
 }
-
-
-
