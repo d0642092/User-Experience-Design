@@ -87,7 +87,7 @@ void video()
 	Mat out;
 	Mat d;
 
-	int flag,flag2;
+	int flag,flag2,flag3;
 	int successful = 0;
 	int X_position=0, Y_position=0;
 
@@ -142,7 +142,7 @@ void video()
 		{
 			mc = Point2f(mu[i].m10 / mu[i].m00, mu[i].m01 / mu[i].m00);
 		}
-		circle(dst, mc, 10, Scalar(255, 0, 0), -1);
+		circle(dst, mc, 10, Scalar(255, 155, 62), -1);
 
 
 		//判斷
@@ -177,8 +177,17 @@ void video()
 					if (mc.y >= Y_position - z1 & mc.y <= Y_position + z1) {
 						break;
 					}
+					else {
+						X_position = 0;
+						Y_position = 0;
+					}
+				}
+				else {
+					X_position = 0;
+					Y_position = 0;
 				}
 			}
+			
 			
 			
 			if (mc.x >= myPoint.x - z1 & mc.x <= myPoint.x + z1) {
