@@ -71,8 +71,8 @@ int main(int argc, char** argv) {
 			gameStatus = Mat::zeros(video.rows, video.cols, video.type());
 			destroyAllWindows();
 		}
-
 	}
+	cap.release();
 	return 0;
 }
 
