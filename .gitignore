@@ -1,0 +1,7 @@
+x64/
+.vs/
+Debug/
+VisualGame/*
+!VisualGame/*.cpp
+!VisualGame/*.h
+*.sln
