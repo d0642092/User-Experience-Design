@@ -15,13 +15,14 @@ https://github.com/d0642092/VisualGame/assets/43847520/14078deb-ae60-486f-a619-6
 	 一般, 其他程式庫目錄: '{路徑}\opencv\build\x64\vc15\lib'  
 	 輸入, 其他相依性: 'opencv_world347d.lib' (檔案在其他程式庫目錄中)
 
-## 架構圖
-
-## 流程圖
+## 系統圖
+![system](img/system.png)  
 
 ## 主程式(main)  
 1. 遊戲介面
 2. 結束介面 
+
+![main](img/main.png)  
 
 | 名稱 | 型態 | 意義 |
 | ---- | ---- | ---------------  
@@ -37,6 +38,8 @@ https://github.com/d0642092/VisualGame/assets/43847520/14078deb-ae60-486f-a619-6
 2. 影像處理、偵測顏色位置並結合遊戲影像
 3. 遊戲狀態更新: 顏色改變
 4. 遊戲狀態判斷: 偵測結束或重新開始
+
+![GameStatus](img/gameStatus.png)  
 
 | 名稱 | 型態 | 意義 |
 | ---- | ---- | ---------------  
