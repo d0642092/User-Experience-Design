@@ -1,7 +1,7 @@
 # Visual Game
 
 ## 呈現影片
-// Game視窗會結合視訊影像
+* Game視窗會結合視訊影像
 
 https://github.com/d0642092/VisualGame/assets/43847520/14078deb-ae60-486f-a619-6a607b262631
 
