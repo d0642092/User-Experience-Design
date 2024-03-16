@@ -39,7 +39,7 @@ https://github.com/d0642092/VisualGame/assets/43847520/14078deb-ae60-486f-a619-6
 3. 遊戲狀態更新: 顏色改變
 4. 遊戲狀態判斷: 偵測結束或重新開始
 
-<b> Get Game Status </b> 
+* Get Game Status *
 ![GameStatus](img/gameStatus.png)  
 
 | 名稱 | 型態 | 意義 |
