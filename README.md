@@ -2,6 +2,8 @@
 
 ## 呈現影片
 
+https://github.com/d0642092/VisualGame/assets/43847520/14078deb-ae60-486f-a619-6a607b262631
+
 ## 環境設定
 1. 下載 opencv  
 2. 環境變數 PATH: '{路徑}\opencv\build\x64\vc15\bin'
