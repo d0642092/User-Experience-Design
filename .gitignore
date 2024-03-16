@@ -1,6 +1,7 @@
 x64/
 .vs/
 Debug/
+video/
 VisualGame/*
 !VisualGame/*.cpp
 !VisualGame/*.h
