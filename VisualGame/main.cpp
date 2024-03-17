@@ -20,10 +20,10 @@ int main(int argc, char** argv){
 		if (gameControl.isFinish(&gameVisual)) {
 			waitKey(300);
 			gameControl.reset_detect_center();
-			destroyAllWindows();
+			//destroyAllWindows();
 			if (!finish_menu(cap, gameControl))
 				break;
-			destroyAllWindows();
+			//destroyAllWindows();
 			gameControl.init_game(video);
 		};
 
